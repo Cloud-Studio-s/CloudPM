@@ -1,0 +1,5 @@
+server-optimizer:
+  tick-entities: true
+  tick-animals: true
+  tick-monsters: true
+  tick-drops: true
