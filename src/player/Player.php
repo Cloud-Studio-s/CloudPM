@@ -1072,6 +1072,62 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	}
 
 	/**
+	 * Returns the number of chunks currently queued to be sent to this player.
+	 */
+	public function getChunkQueueSize() : int{
+		return $this->chunkSendQueue->getSize();
+	}
+
+	/**
+	 * Returns a list of chunks currently queued to be sent to this player.
+	 *
+	 * Each entry is an array: ["chunkX" => int, "chunkZ" => int, "priority" => int].
+	 *
+	 * @return array<int, array{chunkX:int, chunkZ:int, priority:int}>
+	 */
+	public function getPendingChunkSends() : array{
+		return $this->chunkSendQueue->getAll();
+	}
+
+	/**
+	 * Returns how many chunks this player is currently using (loaded + in use).
+	 */
+	public function getUsedChunkCount() : int{
+		return count($this->usedChunks);
+	}
+
+	/**
+	 * Returns spawn chunk load progress for this player.
+	 *
+	 * - 0.0 1.0 while the initial spawn terrain is being loaded.
+	 * - -1.0 if spawn loading is not in progress or already completed.
+	 */
+	public function getSpawnChunkLoadProgress() : float{
+		if($this->spawnChunkLoadCount === -1 || $this->spawnThreshold <= 0){
+			return -1.0;
+		}
+
+		$progress = $this->spawnChunkLoadCount / $this->spawnThreshold;
+		if($progress < 0.0){
+			return 0.0;
+		}
+		if($progress > 1.0){
+			return 1.0;
+		}
+		return $progress;
+	}
+
+	/**
+	 * Returns whether the player's initial terrain (spawn area) has finished loading.
+	 *
+	 * This becomes true after the spawn chunk threshold is reached
+	 * and the terrain ready notification has been sent.
+	 */
+	public function isTerrainReady() : bool{
+		return $this->spawnChunkLoadCount === -1;
+	}
+
+	/**
 	 * Returns a usage status of the given chunk, or null if the player is not using the given chunk.
 	 */
 	public function getUsedChunkStatus(int $chunkX, int $chunkZ) : ?UsedChunkStatus{

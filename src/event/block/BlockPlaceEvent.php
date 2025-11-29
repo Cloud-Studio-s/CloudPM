@@ -30,6 +30,8 @@ use pocketmine\event\Event;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 
 /**
  * Called when a player initiates a block placement action.
@@ -77,5 +79,71 @@ class BlockPlaceEvent extends Event implements Cancellable{
 
 	public function getBlockAgainst() : Block{
 		return $this->blockAgainst;
+	}
+
+	/**
+	 * Returns the world where the blocks are being placed.
+	 */
+	public function getWorld() : World{
+		return $this->blockAgainst->getPosition()->getWorld();
+	}
+
+	/**
+	 * Returns how many blocks will be changed by this placement.
+	 */
+	public function getBlockChangeCount() : int{
+		return count($this->transaction->getBlocks());
+	}
+
+	/**
+	 * Returns whether this placement affects more than one block (e.g. doors, beds).
+	 */
+	public function isMultiBlockPlacement() : bool{
+		return $this->getBlockChangeCount() > 1;
+	}
+
+	/**
+	 * Returns the primary block being placed, if any.
+	 *
+	 * This is usually the first entry in the transaction.
+	 */
+	public function getPrimaryBlock() : ?Block{
+		$blocks = $this->transaction->getBlocks();
+		if($blocks === []){
+			return null;
+		}
+		[, , , $block] = $blocks[0];
+		return $block;
+	}
+
+	/**
+	 * Returns the position of the primary block being placed, if any.
+	 */
+	public function getPrimaryBlockPosition() : ?Position{
+		$blocks = $this->transaction->getBlocks();
+		if($blocks === []){
+			return null;
+		}
+
+		$world = $this->getWorld();
+		[$x, $y, $z, ] = $blocks[0];
+
+		return new Position($x, $y, $z, $world);
+	}
+
+	/**
+	 * Returns an array of Positions for all blocks that will be changed by this placement.
+	 *
+	 * @return Position[]
+	 */
+	public function getChangedBlockPositions() : array{
+		$result = [];
+		$world = $this->getWorld();
+
+		foreach($this->transaction->getBlocks() as [$x, $y, $z, $block]){
+			$result[] = new Position($x, $y, $z, $world);
+		}
+
+		return $result;
 	}
 }

@@ -198,4 +198,106 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 		return KnownTranslationFactory::death_attack_generic($name);
 	}
+
+
+	/**
+	 * Returns the last damage cause that killed the player, or null if unknown.
+	 */
+	public function getDamageCause() : ?EntityDamageEvent{
+		return $this->player->getLastDamageCause();
+	}
+
+	/**
+	 * Returns whether the player was killed by another entity (player or mob).
+	 */
+	public function wasKilledByEntity() : bool{
+		return $this->player->getLastDamageCause() instanceof EntityDamageByEntityEvent;
+	}
+
+	/**
+	 * Returns whether the player was killed by another player.
+	 */
+	public function wasKilledByPlayer() : bool{
+		$cause = $this->player->getLastDamageCause();
+		return $cause instanceof EntityDamageByEntityEvent && $cause->isDamagerPlayer();
+	}
+
+	/**
+	 * Returns whether the player was killed by what is likely an environmental cause
+	 * (fall, fire, lava, suffocation, explosion, etc.).
+	 */
+	public function wasKilledByEnvironment() : bool{
+		$cause = $this->player->getLastDamageCause();
+		return $cause !== null && $cause->isEnvironmentalDamage();
+	}
+
+	/**
+	 * Returns how many items are currently set to drop on death.
+	 */
+	public function getDropCount() : int{
+		return count($this->getDrops());
+	}
+
+	/**
+	 * Returns whether there are any item drops configured for this death.
+	 */
+	public function hasDrops() : bool{
+		return $this->getDropCount() > 0;
+	}
+
+	/**
+	 * Removes all drops. No items will be dropped when the player dies.
+	 */
+	public function clearDrops() : void{
+		$this->setDrops([]);
+	}
+
+	/**
+	 * Adds a single item to the death drops.
+	 */
+	public function addDrop(Item $item) : void{
+		$drops = $this->getDrops();
+		$drops[] = $item;
+		$this->setDrops($drops);
+	}
+
+	/**
+	 * Adds multiple items to the death drops.
+	 *
+	 * @param Item[] $items
+	 */
+	public function addDrops(array $items) : void{
+		$drops = $this->getDrops();
+		foreach($items as $item){
+			if($item instanceof Item){
+				$drops[] = $item;
+			}
+		}
+		$this->setDrops($drops);
+	}
+
+	/**
+	 * Removes the drop at the given index, if it exists.
+	 */
+	public function removeDropAt(int $index) : void{
+		$drops = $this->getDrops();
+		if(isset($drops[$index])){
+			unset($drops[$index]);
+			$this->setDrops(array_values($drops));
+		}
+	}
+
+	/**
+	 * Returns whether any XP will be dropped.
+	 */
+	public function hasXpDrop() : bool{
+		return $this->getXpDropAmount() > 0;
+	}
+
+	/**
+	 * Clears any XP drop; no XP orbs will be spawned on death.
+	 */
+	public function clearXpDrop() : void{
+		$this->setXpDropAmount(0);
+	}
 }

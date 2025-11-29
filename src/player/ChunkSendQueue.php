@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
+use pocketmine\event\player\PlayerChunkQueuedSendEvent;
 use function abs;
 use function uasort;
 
@@ -41,6 +42,14 @@ final class ChunkSendQueue{
 			}
 			return;
 		}
+
+		$ev = new PlayerChunkQueuedSendEvent($this->player, $chunkX, $chunkZ, $priority);
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
+		$priority = $ev->getPriority();
+
 		$this->queue[$key] = [$chunkX, $chunkZ, $priority];
 	}
 
@@ -93,7 +102,28 @@ final class ChunkSendQueue{
 		return abs($chunkX - $px) <= $view && abs($chunkZ - $pz) <= $view;
 	}
 
+	public function getSize() : int{
+		return count($this->queue);
+	}
+
 	public function clear() : void{
 		$this->queue = [];
+	}
+
+	/**
+	 * Returns all currently queued chunks for this player.
+	 *
+	 * @return array<int, array{chunkX:int, chunkZ:int, priority:int}>
+	 */
+	public function getAll() : array{
+		$result = [];
+		foreach($this->queue as [$chunkX, $chunkZ, $priority]){
+			$result[] = [
+				"chunkX" => $chunkX,
+				"chunkZ" => $chunkZ,
+				"priority" => $priority
+			];
+		}
+		return $result;
 	}
 }

@@ -26,6 +26,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\player\Player;
 
 /**
  * Called when an entity takes damage from another entity.
@@ -104,5 +105,44 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 */
 	public function setVerticalKnockBackLimit(float $verticalKnockBackLimit) : void{
 		$this->verticalKnockBackLimit = $verticalKnockBackLimit;
+	}
+
+	/**
+	 * Returns the numeric ID of the attacking entity.
+	 */
+	public function getDamagerEntityId() : int{
+		return $this->damagerEntityId;
+	}
+
+	/**
+	 * Returns whether the damager is still present and is a Living entity.
+	 */
+	public function isDamagerLiving() : bool{
+		return $this->getDamager() instanceof Living;
+	}
+
+	/**
+	 * Returns whether the damager is still present and is a Player.
+	 */
+	public function isDamagerPlayer() : bool{
+		return $this->getDamager() instanceof Player;
+	}
+
+	/**
+	 * Returns the attacking entity as Living, or null if the damager is
+	 * missing or not a Living entity.
+	 */
+	public function getDamagerLiving() : ?Living{
+		$damager = $this->getDamager();
+		return $damager instanceof Living ? $damager : null;
+	}
+
+	/**
+	 * Returns the attacking entity as Player, or null if the damager is
+	 * missing or not a Player.
+	 */
+	public function getDamagerPlayer() : ?Player{
+		$damager = $this->getDamager();
+		return $damager instanceof Player ? $damager : null;
 	}
 }

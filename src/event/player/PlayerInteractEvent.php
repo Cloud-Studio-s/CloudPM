@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
+use pocketmine\world\Position;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -100,4 +101,57 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	 * respond, containers will not open, etc.
 	 */
 	public function setUseBlock(bool $useBlock) : void{ $this->useBlock = $useBlock; }
+
+	/**
+	 * Returns whether this interaction was a left click on a block.
+	 */
+	public function isLeftClick() : bool{
+		return $this->action === self::LEFT_CLICK_BLOCK;
+	}
+
+	/**
+	 * Returns whether this interaction was a right click on a block.
+	 */
+	public function isRightClick() : bool{
+		return $this->action === self::RIGHT_CLICK_BLOCK;
+	}
+
+	/**
+	 * Returns the position of the block being interacted with.
+	 */
+	public function getBlockPosition() : Position{
+		return $this->blockTouched->getPosition();
+	}
+
+	/**
+	 * Returns whether the used item is currently allowed to react
+	 * to this interaction (same as useItem()).
+	 */
+	public function isItemUseAllowed() : bool{
+		return $this->useItem;
+	}
+
+	/**
+	 * Returns whether the block is currently allowed to react
+	 * to this interaction (same as useBlock()).
+	 */
+	public function isBlockUseAllowed() : bool{
+		return $this->useBlock;
+	}
+
+	/**
+	 * Returns true if only the item is allowed to react, and the
+	 * block interaction is disabled.
+	 */
+	public function isItemOnlyInteraction() : bool{
+		return $this->useItem && !$this->useBlock;
+	}
+
+	/**
+	 * Returns true if only the block is allowed to react, and the
+	 * item interaction is disabled.
+	 */
+	public function isBlockOnlyInteraction() : bool{
+		return $this->useBlock && !$this->useItem;
+	}
 }

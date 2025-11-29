@@ -85,4 +85,56 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		Utils::validateArrayValueType($recipients, function(CommandSender $_) : void{});
 		$this->recipients = $recipients;
 	}
+
+	/**
+	 * Returns how many recipients will receive this chat message.
+	 */
+	public function getRecipientCount() : int{
+		return count($this->recipients);
+	}
+
+	/**
+	 * Adds a recipient to the list if it's not already present.
+	 */
+	public function addRecipient(CommandSender $recipient) : void{
+		foreach($this->recipients as $existing){
+			if($existing === $recipient){
+				return;
+			}
+		}
+		$this->recipients[] = $recipient;
+	}
+
+	/**
+	 * Removes a recipient from the list if present.
+	 */
+	public function removeRecipient(CommandSender $recipient) : void{
+		foreach($this->recipients as $i => $existing){
+			if($existing === $recipient){
+				unset($this->recipients[$i]);
+				$this->recipients = array_values($this->recipients);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Removes all recipients. No one will receive the message unless new
+	 * recipients are added later.
+	 */
+	public function clearRecipients() : void{
+		$this->recipients = [];
+	}
+
+	/**
+	 * Returns whether the given recipient is currently in the recipient list.
+	 */
+	public function isRecipient(CommandSender $recipient) : bool{
+		foreach($this->recipients as $existing){
+			if($existing === $recipient){
+				return true;
+			}
+		}
+		return false;
+	}
 }

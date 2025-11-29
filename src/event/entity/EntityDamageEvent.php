@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use function array_sum;
@@ -182,5 +183,121 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 */
 	public function setAttackCooldown(int $attackCooldown) : void{
 		$this->attackCooldown = $attackCooldown;
+	}
+
+	/**
+	 * Returns the sum of all modifiers currently applied to this damage.
+	 */
+	public function getTotalModifier() : float{
+		return array_sum($this->modifiers);
+	}
+
+	/**
+	 * Returns whether any modifiers are currently applied to this damage.
+	 */
+	public function hasModifiers() : bool{
+		return $this->modifiers !== [];
+	}
+
+	/**
+	 * Returns whether this damage was caused by a fall.
+	 */
+	public function isFallDamage() : bool{
+		return $this->cause === self::CAUSE_FALL;
+	}
+
+	/**
+	 * Returns whether this damage was caused by fire, fire tick or lava.
+	 */
+	public function isFireDamage() : bool{
+		return $this->cause === self::CAUSE_FIRE ||
+			$this->cause === self::CAUSE_FIRE_TICK ||
+			$this->cause === self::CAUSE_LAVA;
+	}
+
+	/**
+	 * Returns whether this damage was caused by an explosion.
+	 */
+	public function isExplosionDamage() : bool{
+		return $this->cause === self::CAUSE_BLOCK_EXPLOSION ||
+			$this->cause === self::CAUSE_ENTITY_EXPLOSION;
+	}
+
+	/**
+	 * Returns whether this damage was caused by a projectile.
+	 */
+	public function isProjectileDamage() : bool{
+		return $this->cause === self::CAUSE_PROJECTILE;
+	}
+
+	/**
+	 * Returns whether this damage was caused by void.
+	 */
+	public function isVoidDamage() : bool{
+		return $this->cause === self::CAUSE_VOID;
+	}
+
+	/**
+	 * Returns whether this damage was caused by suffocation or drowning.
+	 */
+	public function isSuffocationDamage() : bool{
+		return $this->cause === self::CAUSE_SUFFOCATION ||
+			$this->cause === self::CAUSE_DROWNING;
+	}
+
+	/**
+	 * Returns whether this damage was caused by starvation.
+	 */
+	public function isStarvationDamage() : bool{
+		return $this->cause === self::CAUSE_STARVATION;
+	}
+
+	/**
+	 * Returns whether this damage was self-inflicted (suicide).
+	 */
+	public function isSuicide() : bool{
+		return $this->cause === self::CAUSE_SUICIDE;
+	}
+
+	/**
+	 * Returns whether this damage uses the CUSTOM cause.
+	 */
+	public function isCustomDamage() : bool{
+		return $this->cause === self::CAUSE_CUSTOM;
+	}
+
+	/**
+	 * Returns whether this damage is likely to be considered "environmental"
+	 * (not directly caused by another entity).
+	 */
+	public function isEnvironmentalDamage() : bool{
+		return match($this->cause){
+			self::CAUSE_FALL,
+			self::CAUSE_FIRE,
+			self::CAUSE_FIRE_TICK,
+			self::CAUSE_LAVA,
+			self::CAUSE_SUFFOCATION,
+			self::CAUSE_DROWNING,
+			self::CAUSE_VOID,
+			self::CAUSE_STARVATION,
+			self::CAUSE_FALLING_BLOCK,
+			self::CAUSE_BLOCK_EXPLOSION => true,
+			default => false
+		};
+	}
+
+	/**
+	 * Returns true if this damage would kill the target entity, assuming its
+	 * current health does not change before the damage is applied.
+	 *
+	 * For non-Living entities, this always returns false.
+	 */
+	public function willKillEntity() : bool{
+		$entity = $this->getEntity();
+		if(!$entity instanceof Living){
+			return false;
+		}
+
+		return $this->getFinalDamage() >= $entity->getHealth();
 	}
 }

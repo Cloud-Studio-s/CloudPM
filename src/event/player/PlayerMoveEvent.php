@@ -52,4 +52,76 @@ class PlayerMoveEvent extends PlayerEvent implements Cancellable{
 		Utils::checkLocationNotInfOrNaN($to);
 		$this->to = $to;
 	}
+
+	/**
+	 * Returns the horizontal delta X between from and to.
+	 */
+	public function getDeltaX() : float{
+		return $this->to->x - $this->from->x;
+	}
+
+	/**
+	 * Returns the vertical delta Y between from and to.
+	 */
+	public function getDeltaY() : float{
+		return $this->to->y - $this->from->y;
+	}
+
+	/**
+	 * Returns the horizontal delta Z between from and to.
+	 */
+	public function getDeltaZ() : float{
+		return $this->to->z - $this->from->z;
+	}
+
+	/**
+	 * Returns the squared 3D distance between from and to.
+	 */
+	public function getDistanceSquared() : float{
+		return $this->from->distanceSquared($this->to);
+	}
+
+	/**
+	 * Returns the squared horizontal (XZ) distance between from and to.
+	 */
+	public function getHorizontalDistanceSquared() : float{
+		$dx = $this->getDeltaX();
+		$dz = $this->getDeltaZ();
+		return $dx * $dx + $dz * $dz;
+	}
+
+	/**
+	 * Returns the yaw difference (toYaw - fromYaw).
+	 */
+	public function getDeltaYaw() : float{
+		return $this->to->yaw - $this->from->yaw;
+	}
+
+	/**
+	 * Returns the pitch difference (toPitch - fromPitch).
+	 */
+	public function getDeltaPitch() : float{
+		return $this->to->pitch - $this->from->pitch;
+	}
+
+	/**
+	 * Returns whether the position (x, y, z) changed between from and to.
+	 */
+	public function hasPositionChanged() : bool{
+		return $this->getDistanceSquared() > 0.0;
+	}
+
+	/**
+	 * Returns whether the rotation (yaw, pitch) changed between from and to.
+	 */
+	public function hasRotationChanged() : bool{
+		return $this->getDeltaYaw() != 0.0 || $this->getDeltaPitch() != 0.0;
+	}
+
+	/**
+	 * Returns true if only rotation changed (no position change).
+	 */
+	public function isRotationOnly() : bool{
+		return $this->hasRotationChanged() && !$this->hasPositionChanged();
+	}
 }

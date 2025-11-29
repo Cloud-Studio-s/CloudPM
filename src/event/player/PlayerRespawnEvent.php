@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
+use pocketmine\world\World;
 
 /**
  * Called when a player is respawned
@@ -48,5 +49,49 @@ class PlayerRespawnEvent extends PlayerEvent{
 		}
 		Utils::checkVector3NotInfOrNaN($position);
 		$this->position = $position;
+	}
+
+	/**
+	 * Returns the world the player will respawn in.
+	 */
+	public function getRespawnWorld() : World{
+		return $this->position->getWorld();
+	}
+
+	/**
+	 * Returns the respawn X coordinate (floored).
+	 */
+	public function getRespawnX() : int{
+		return $this->position->getFloorX();
+	}
+
+	/**
+	 * Returns the respawn Y coordinate (floored).
+	 */
+	public function getRespawnY() : int{
+		return $this->position->getFloorY();
+	}
+
+	/**
+	 * Returns the respawn Z coordinate (floored).
+	 */
+	public function getRespawnZ() : int{
+		return $this->position->getFloorZ();
+	}
+
+	/**
+	 * Returns whether the respawn world is the server's default world.
+	 */
+	public function isRespawnInDefaultWorld() : bool{
+		$world = $this->position->getWorld();
+		$default = $world->getServer()->getWorldManager()->getDefaultWorld();
+		return $default !== null && $default === $world;
+	}
+
+	/**
+	 * Returns whether the respawn world is different from the server's default world.
+	 */
+	public function isRespawnInCustomWorld() : bool{
+		return !$this->isRespawnInDefaultWorld();
 	}
 }

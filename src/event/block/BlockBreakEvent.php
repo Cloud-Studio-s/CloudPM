@@ -116,4 +116,77 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 		}
 		$this->xpDrops = $amount;
 	}
+
+
+	/**
+	 * Alias for getInstaBreak(), provided for readability.
+	 */
+	public function isInstaBreak() : bool{
+		return $this->instaBreak;
+	}
+
+	/**
+	 * Returns how many items are currently set to drop when this block is broken.
+	 */
+	public function getDropCount() : int{
+		return count($this->blockDrops);
+	}
+
+	/**
+	 * Returns whether there are any drops configured for this break.
+	 */
+	public function hasDrops() : bool{
+		return $this->getDropCount() > 0;
+	}
+
+	/**
+	 * Removes all drops. No items will be dropped when the block is broken.
+	 */
+	public function clearDrops() : void{
+		$this->blockDrops = [];
+	}
+
+	/**
+	 * Adds a single item to the block drops.
+	 */
+	public function addDrop(Item $item) : void{
+		$this->blockDrops[] = $item;
+	}
+
+	/**
+	 * Adds multiple items to the block drops.
+	 *
+	 * @param Item[] $items
+	 */
+	public function addDrops(array $items) : void{
+		foreach($items as $item){
+			if($item instanceof Item){
+				$this->blockDrops[] = $item;
+			}
+		}
+	}
+
+	/**
+	 * Removes the drop at the given index, if it exists.
+	 */
+	public function removeDropAt(int $index) : void{
+		if(isset($this->blockDrops[$index])){
+			unset($this->blockDrops[$index]);
+			$this->blockDrops = array_values($this->blockDrops);
+		}
+	}
+
+	/**
+	 * Returns whether any XP will be dropped.
+	 */
+	public function hasXpDrop() : bool{
+		return $this->xpDrops > 0;
+	}
+
+	/**
+	 * Clears any XP drop; no XP orbs will be spawned when this block is broken.
+	 */
+	public function clearXpDrop() : void{
+		$this->xpDrops = 0;
+	}
 }
