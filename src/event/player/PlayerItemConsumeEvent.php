@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\item\ConsumableItem;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
@@ -43,5 +44,35 @@ class PlayerItemConsumeEvent extends PlayerEvent implements Cancellable{
 
 	public function getItem() : Item{
 		return clone $this->item;
+	}
+
+	/**
+	 * Returns the display name of the consumed item.
+	 */
+	public function getItemName() : string{
+		return $this->item->getName();
+	}
+
+	/**
+	 * Returns the item state ID. This can be used as a stable identifier
+	 * for this exact item form (type + meta + possibly NBT).
+	 */
+	public function getItemStateId() : int{
+		return $this->item->getStateId();
+	}
+
+	/**
+	 * Returns how many items were in the stack when this event was fired.
+	 */
+	public function getItemCount() : int{
+		return $this->item->getCount();
+	}
+
+	/**
+	 * Returns whether the consumed item is an instance of ConsumableItem
+	 * (food, potions and other consumable items).
+	 */
+	public function isConsumableItem() : bool{
+		return $this->item instanceof ConsumableItem;
 	}
 }

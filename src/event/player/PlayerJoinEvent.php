@@ -48,4 +48,29 @@ class PlayerJoinEvent extends PlayerEvent{
 	public function getJoinMessage() : Translatable|string{
 		return $this->joinMessage;
 	}
+
+	/**
+	 * Returns true if there is a non-empty join message configured.
+	 */
+	public function hasJoinMessage() : bool{
+		return $this->joinMessage !== "";
+	}
+
+	/**
+	 * Clears the join message. No message will be broadcast unless another
+	 * plugin sets one afterward.
+	 */
+	public function clearJoinMessage() : void{
+		$this->joinMessage = "";
+	}
+
+	/**
+	 * Returns the join message translated to the server language as a plain string.
+	 */
+	public function getFormattedJoinMessage() : string{
+		if($this->joinMessage instanceof Translatable){
+			return $this->player->getLanguage()->translate($this->joinMessage);
+		}
+		return (string) $this->joinMessage;
+	}
 }

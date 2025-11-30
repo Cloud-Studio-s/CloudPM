@@ -56,4 +56,40 @@ class PlayerItemUseEvent extends PlayerEvent implements Cancellable{
 	public function getDirectionVector() : Vector3{
 		return $this->directionVector;
 	}
+
+	/**
+	 * Returns the X component of the direction vector.
+	 */
+	public function getDirectionX() : float{
+		return $this->directionVector->x;
+	}
+
+	/**
+	 * Returns the Y component of the direction vector.
+	 */
+	public function getDirectionY() : float{
+		return $this->directionVector->y;
+	}
+
+	/**
+	 * Returns the Z component of the direction vector.
+	 */
+	public function getDirectionZ() : float{
+		return $this->directionVector->z;
+	}
+
+	/**
+	 * Returns the display name of the used item.
+	 */
+	public function getItemName() : string{
+		return $this->item->getName();
+	}
+
+	/**
+	 * Returns the item state ID. This can be used as a stable identifier
+	 * for this exact item form (type + meta + possibly NBT).
+	 */
+	public function getItemStateId() : int{
+		return $this->item->getStateId();
+	}
 }

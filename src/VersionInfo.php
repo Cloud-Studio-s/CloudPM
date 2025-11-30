@@ -32,7 +32,7 @@ use function str_repeat;
 final class VersionInfo{
 	public const NAME = "CloudPM";
 	public const BASE_VERSION = "5.37.4";
-	const FORK_VERSION = "1.1.0";
+	const FORK_VERSION = "1.1.1";
 	public const IS_DEVELOPMENT_BUILD = false;
 	public const BUILD_CHANNEL = "stable";
 	public const GITHUB_URL = "https://github.com/Cloud-Studio-s/CloudPM";

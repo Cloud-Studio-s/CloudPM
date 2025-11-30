@@ -198,4 +198,60 @@ class PlayerPreLoginEvent extends Event{
 
 		return "";
 	}
+
+	/**
+	 * Returns true if any kick flags are set (i.e. the player will be kicked).
+	 */
+	public function isKicked() : bool{
+		return !$this->isAllowed();
+	}
+
+	/**
+	 * Convenience method: set a plugin-defined kick reason.
+	 */
+	public function kickAsPlugin(Translatable|string $reason, Translatable|string|null $screenMessage = null) : void{
+		$this->setKickFlag(self::KICK_FLAG_PLUGIN, $reason, $screenMessage);
+	}
+
+	/**
+	 * Convenience method: set a "server full" kick reason.
+	 */
+	public function kickServerFull(Translatable|string $reason, Translatable|string|null $screenMessage = null) : void{
+		$this->setKickFlag(self::KICK_FLAG_SERVER_FULL, $reason, $screenMessage);
+	}
+
+	/**
+	 * Convenience method: set a "whitelisted" kick reason.
+	 */
+	public function kickWhitelisted(Translatable|string $reason, Translatable|string|null $screenMessage = null) : void{
+		$this->setKickFlag(self::KICK_FLAG_SERVER_WHITELISTED, $reason, $screenMessage);
+	}
+
+	/**
+	 * Convenience method: set a "banned" kick reason.
+	 */
+	public function kickBanned(Translatable|string $reason, Translatable|string|null $screenMessage = null) : void{
+		$this->setKickFlag(self::KICK_FLAG_BANNED, $reason, $screenMessage);
+	}
+
+	/**
+	 * Returns true if the "banned" kick flag is set.
+	 */
+	public function isBanned() : bool{
+		return $this->isKickFlagSet(self::KICK_FLAG_BANNED);
+	}
+
+	/**
+	 * Returns true if the "server full" kick flag is set.
+	 */
+	public function isServerFullKick() : bool{
+		return $this->isKickFlagSet(self::KICK_FLAG_SERVER_FULL);
+	}
+
+	/**
+	 * Returns true if the "server whitelisted" kick flag is set.
+	 */
+	public function isWhitelistKick() : bool{
+		return $this->isKickFlagSet(self::KICK_FLAG_SERVER_WHITELISTED);
+	}
 }

@@ -50,4 +50,38 @@ class PlayerLoginEvent extends PlayerEvent implements Cancellable{
 	public function getKickMessage() : Translatable|string{
 		return $this->kickMessage;
 	}
+
+	/**
+	 * Returns true if there is a non-empty kick message configured.
+	 */
+	public function hasKickMessage() : bool{
+		return $this->kickMessage !== "";
+	}
+
+	/**
+	 * Clears the kick message. If the event is cancelled with an empty message,
+	 * the server will usually fall back to a generic disconnect message.
+	 */
+	public function clearKickMessage() : void{
+		$this->kickMessage = "";
+	}
+
+	/**
+	 * Returns the kick message translated to the server language as a plain string.
+	 */
+	public function getFormattedKickMessage() : string{
+		if($this->kickMessage instanceof Translatable){
+			return $this->player->getLanguage()->translate($this->kickMessage);
+		}
+		return (string) $this->kickMessage;
+	}
+
+	/**
+	 * Convenience method: sets the kick message and cancels the event,
+	 * denying the player's login.
+	 */
+	public function deny(Translatable|string $kickMessage) : void{
+		$this->kickMessage = $kickMessage;
+		$this->cancel();
+	}
 }

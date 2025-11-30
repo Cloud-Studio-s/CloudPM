@@ -65,4 +65,39 @@ class PlayerQuitEvent extends PlayerEvent{
 	public function getQuitReason() : Translatable|string{
 		return $this->quitReason;
 	}
+
+	/**
+	 * Returns true if there is a non-empty quit message configured.
+	 */
+	public function hasQuitMessage() : bool{
+		return $this->quitMessage !== "";
+	}
+
+	/**
+	 * Clears the quit message. No message will be broadcast unless another
+	 * plugin sets one afterward.
+	 */
+	public function clearQuitMessage() : void{
+		$this->quitMessage = "";
+	}
+
+	/**
+	 * Returns the quit message translated to the server language as a plain string.
+	 */
+	public function getFormattedQuitMessage() : string{
+		if($this->quitMessage instanceof Translatable){
+			return $this->player->getLanguage()->translate($this->quitMessage);
+		}
+		return (string) $this->quitMessage;
+	}
+
+	/**
+	 * Returns the quit reason translated to the server language as a plain string.
+	 */
+	public function getFormattedQuitReason() : string{
+		if($this->quitReason instanceof Translatable){
+			return $this->player->getLanguage()->translate($this->quitReason);
+		}
+		return (string) $this->quitReason;
+	}
 }
